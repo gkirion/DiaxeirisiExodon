@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css" />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-route.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
+    </head>
+<body>
+    <div ng-app="DiaxeirisiExodon">
+        <div class="container">
+            <h1>Διαχείριση Εξόδων</h1>
+            <div class="row">
+                <nav class="bg-dark navbar-dark col-2">
+                    <ul class="navbar-nav" style="margin-top: 69px;">
+                        <li class="nav-item">
+                        <a class="nav-link" href="#!categories">Categories</a>
+                        </li>
+                        <li class="nav-item">
+                        <a class="nav-link" href="#!">Current expenses</a>
+                        </li>
+                        <li class="nav-item">
+                        <a class="nav-link" href="#!expensesHistory">Expenses history</a>
+                        </li>
+                    </ul>
+                </nav>
+                <div class="ng-scope col-8" ng-view></div>
+            </div>
+        </div>
+
+        <script>
+            app = angular.module('DiaxeirisiExodon', ['ngRoute']);
+            app.config(function($routeProvider) {
+                $routeProvider.when("/categories", {
+                    templateUrl: "/views/categories.html",
+                    controller: "categoriesController"
+                }).when("/", {
+                    templateUrl: "/views/currentExpenses.html",
+                    controller: "myController"
+                }).when("/expensesHistory", {
+                    templateUrl: "/views/expensesHistory.html",
+                    controller: "myController"
+                });
+            });
+
+            app.controller('myController', function($scope, $http) {
+                $scope.name = "george";
+                $scope.items = ['apple', 'banana', 'orange', 'firiki'];
+
+                $scope.loadExpenses = function() {
+                    $http.get('http://localhost:8080/expense').then(function(response) {
+                        $scope.expenses = response.data;
+                        console.log($scope.expenses);
+                        var expensesPerCategoryMap = {};
+                        var expensesPerCategory = [];
+                        for (expense of $scope.expenses) {
+                            if (expensesPerCategoryMap[expense.category.name] == undefined) {
+                                expensesPerCategoryMap[expense.category.name] = [];
+                            }
+                            expensesPerCategoryMap[expense.category.name].push(expense.amount);
+                        }
+                        console.log(expensesPerCategoryMap)
+                        for (category in expensesPerCategoryMap) {
+                            var t = [];
+                            t.push(category);
+                            for (amount of expensesPerCategoryMap[category]) {
+                                t.push(amount);
+                            }
+                            console.log(t)
+                            expensesPerCategory.push(t);
+                        }
+                        console.log(expensesPerCategory)
+                        var chart = c3.generate({
+                            bindto: '#expensesChart',
+                            data: {
+                                columns: expensesPerCategory,
+                                type: 'pie'
+                            },
+                            pie: {
+                                label: {
+                                    format: function (value, ratio, id) {
+                                        return d3.format('$')(value).replace('$', '€');
+                                    }
+                                }
+                            }
+                        });
+                    });
+                }
+
+                $scope.loadExpenses();
+
+                $scope.newExpense = {};
+                $scope.addExpense = function() {
+                    $http.post('http://localhost:8080/expense', $scope.newExpense).then(function(response) {
+                        //$scope.expenses.push(response.data);
+                        $scope.loadExpenses();
+                    });
+                }
+
+                $scope.removeExpense = function(id) {
+                    $http.delete('http://localhost:8080/expense/' + id).then(function(response) {
+                        $scope.loadExpenses();
+                    });
+                }
+
+                $scope.editExpense = {};
+                $scope.updateExpense = function(id) {
+                    //$scope.newExpense.date = expense.date;
+                    $http.put('http://localhost:8080/expense/' + id, $scope.editExpense).then(function(response) {
+                        $scope.loadExpenses();
+                    });
+                }
+
+                $scope.loadCategories = function() {
+                    $http.get('http://localhost:8080/category').then(function(response) {
+                        $scope.categories = response.data;
+                    });
+                }
+
+                $scope.loadCategories();
+
+
+                $scope.sortExpenseByDate = function(expense) {
+                    return new Date(expense.date);
+                }
+
+                $scope.sortField = 'sortExpenseByDate';
+                $scope.sortReverse = true;
+                $scope.edit = [];
+
+            });
+
+            app.controller('categoriesController', function($scope, $http) {
+
+                $scope.loadCategories = function() {
+                    $http.get('http://localhost:8080/category').then(function(response) {
+                        $scope.categories = response.data;
+                    });
+                }
+
+                $scope.loadCategories();
+
+                $scope.newCategory = {'name': ''};
+                $scope.addCategory = function() {
+                    $http.post('http://localhost:8080/category', $scope.newCategory).then(function(response) {
+                        $scope.categories.push(response.data);
+                    });
+                }
+
+                $scope.removeCategory = function(id) {
+                    $http.delete('http://localhost:8080/category/' + id).then(function(response) {
+                        $scope.loadCategories();
+                    });
+                }
+
+                $scope.editCategory = {};
+                $scope.updateCategory = function(id) {
+                    $http.put('http://localhost:8080/category/' + id, $scope.editCategory).then(function(response) {
+                        $scope.loadCategories();
+                    });
+                }
+
+                $scope.edit = [];
+
+            });
+        </script>
+    
+    </div>
+</body>
+</html> 
