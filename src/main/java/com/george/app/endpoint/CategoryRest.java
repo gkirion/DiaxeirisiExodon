@@ -48,10 +48,16 @@ public class CategoryRest {
 	}
 	
 	@PutMapping("/{id}")
-	public Category update(@PathVariable Integer id, @RequestBody Category updatedCategory) throws CategoryNotFoundException {
+	public Category update(@PathVariable Integer id, @RequestBody Category updatedCategory) throws CategoryNotFoundException, CategoryAlreadyExistsException {
 		Optional<Category> oldCategory = categoryRepository.findById(id);
 		if (!oldCategory.isPresent()) {
 			throw new CategoryNotFoundException();
+		}
+		List<Category> existingCategories = categoryRepository.findByName(updatedCategory.getName());
+		if (!existingCategories.isEmpty()) {
+			if (existingCategories.get(0).getId() != oldCategory.get().getId()) {
+				throw new CategoryAlreadyExistsException();
+			}
 		}
 		oldCategory.get().setName(updatedCategory.getName());
 		return categoryRepository.save(oldCategory.get());
