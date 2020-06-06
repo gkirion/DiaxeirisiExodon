@@ -3,6 +3,7 @@ package com.george.app.endpoint;
 import java.util.List;
 import java.util.Optional;
 
+import com.george.app.exception.CategoryAlreadyExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,13 +28,18 @@ public class CategoryRest {
 	
 	@Autowired
 	private CategoryRepository categoryRepository;
-	
+
 	@Autowired
 	private ExpenseRepository expenseRepository;
 	
 	@PostMapping
-	public Category add(@RequestBody Category category) {
+	public Category add(@RequestBody Category category) throws CategoryAlreadyExistsException {
+		List<Category> existingCategories = categoryRepository.findByName(category.getName());
+		if (!existingCategories.isEmpty()) {
+			throw new CategoryAlreadyExistsException();
+		}
 		return categoryRepository.save(category);
+
 	}
 	
 	@GetMapping
