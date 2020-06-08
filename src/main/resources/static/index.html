@@ -47,7 +47,7 @@
                     controller: "myController"
                 }).when("/expensesHistory", {
                     templateUrl: "/views/expensesHistory.html",
-                    controller: "myController"
+                    controller: "expensesHistoryController"
                 });
             });
 
@@ -56,7 +56,7 @@
                 $scope.items = ['apple', 'banana', 'orange', 'firiki'];
 
                 $scope.loadExpenses = function() {
-                    $http.get('http://localhost:8080/expense').then(function(response) {
+                    $http.get('http://localhost:8080/expense/last10').then(function(response) {
                         $scope.expenses = response.data;
                         console.log($scope.expenses);
                         var expensesPerCategoryMap = {};
@@ -171,6 +171,82 @@
                 $scope.edit = [];
 
             });
+
+            app.controller('expensesHistoryController', function($scope, $http) {
+                
+                $scope.loadExpenses = function() {
+                    $http.get('http://localhost:8080/expense/byDate?start=' + $scope.dateFrom.getDate() + '/' + ($scope.dateFrom.getMonth() + 1) + '/' + $scope.dateFrom.getFullYear() + ' 00:00:00' + '&end=' + $scope.dateTo.getDate() + '/' + ($scope.dateTo.getMonth() + 1) + '/' + $scope.dateTo.getFullYear() + ' 23:59:59').then(function(response) {
+                        $scope.expenses = response.data;
+                        console.log($scope.expenses);
+                        var expensesPerCategoryMap = {};
+                        var expensesPerCategory = [];
+                        for (expense of $scope.expenses) {
+                            if (expensesPerCategoryMap[expense.category.name] == undefined) {
+                                expensesPerCategoryMap[expense.category.name] = [];
+                            }
+                            expensesPerCategoryMap[expense.category.name].push(expense.amount);
+                        }
+                        console.log(expensesPerCategoryMap)
+                        for (category in expensesPerCategoryMap) {
+                            var t = [];
+                            t.push(category);
+                            for (amount of expensesPerCategoryMap[category]) {
+                                t.push(amount);
+                            }
+                            console.log(t)
+                            expensesPerCategory.push(t);
+                        }
+                        console.log(expensesPerCategory)
+                        var chart = c3.generate({
+                            bindto: '#expensesChart',
+                            data: {
+                                columns: expensesPerCategory,
+                                type: 'pie'
+                            },
+                            pie: {
+                                label: {
+                                    format: function (value, ratio, id) {
+                                        return d3.format('$')(value).replace('$', '€');
+                                    }
+                                }
+                            }
+                        });
+                    });
+                }
+
+                $scope.removeExpense = function(id) {
+                    $http.delete('http://localhost:8080/expense/' + id).then(function(response) {
+                        $scope.loadExpenses();
+                    });
+                }
+
+                $scope.editExpense = {};
+                $scope.updateExpense = function(id) {
+                    //$scope.newExpense.date = expense.date;
+                    $http.put('http://localhost:8080/expense/' + id, $scope.editExpense).then(function(response) {
+                        $scope.loadExpenses();
+                    });
+                }
+
+                $scope.loadCategories = function() {
+                    $http.get('http://localhost:8080/category').then(function(response) {
+                        $scope.categories = response.data;
+                    });
+                }
+
+                var currentDate = new Date();
+                $scope.dateFrom = new Date(currentDate.getFullYear() + '/' + currentDate.getMonth() + '/' + currentDate.getDate());
+                $scope.dateTo = currentDate;
+                $scope.sortField = 'date';
+                $scope.sortReverse = true;
+                $scope.edit = [];
+
+                $scope.loadExpenses();
+                $scope.loadCategories();
+
+
+            });
+
         </script>
     
     </div>
