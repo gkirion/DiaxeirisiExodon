@@ -5,15 +5,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.*;
 
 import com.george.app.entity.Category;
 import com.george.app.entity.Expense;
@@ -51,7 +44,17 @@ public class ExpenseRest {
 	public List<Expense> getAll() {
 		return expenseRepository.findAll();
 	}
-	
+
+	@GetMapping("/last10")
+	public List<Expense> findFirst10OrderByDateDesc() {
+		return expenseRepository.findFirst10ByOrderByDateDesc();
+	}
+
+	@GetMapping("/byDate")
+	public List<Expense> findByDateBetweenOrderByDateDesc(@RequestParam("start") @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss") Date start, @RequestParam("end") @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss") Date end) {
+		return expenseRepository.findByDateBetweenOrderByDateDesc(start, end);
+	}
+
 	@GetMapping("/{id}")
 	public Expense get(@PathVariable Integer id) throws ExpenseNotFoundException {
 		Optional<Expense> expense = expenseRepository.findById(id);
