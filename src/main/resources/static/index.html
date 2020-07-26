@@ -95,6 +95,11 @@
                     });
                 }
 
+                $scope.dateField = function(expense) {
+                    var date = new Date(expense.date);
+                    return date;
+                }
+
                 $scope.loadExpenses();
 
                 $scope.newExpense = {};
@@ -132,7 +137,7 @@
                     return new Date(expense.date);
                 }
 
-                $scope.sortField = 'date';
+                $scope.sortField = 'dateField';
                 $scope.sortReverse = false;
                 $scope.edit = [];
 
@@ -237,7 +242,7 @@
                 var currentDate = new Date();
                 $scope.dateFrom = new Date(currentDate.getFullYear() + '/' + currentDate.getMonth() + '/' + currentDate.getDate());
                 $scope.dateTo = currentDate;
-                $scope.sortField = 'date';
+                $scope.sortField = 'dateField';
                 $scope.sortReverse = true;
                 $scope.edit = [];
 
