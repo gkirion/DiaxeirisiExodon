@@ -2,26 +2,27 @@
     <div class="form-group">
         <div class="input-group mb-3">
             <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-search"></i></span></div>
-            <input type="text" class="form-control" placeholder="search in expenses" ng-model="searchExpenses">
+            <input type="text" class="form-control" placeholder="{{'SEARCH' | translate}}" ng-model="searchExpenses">
         </div>
     </div>
 </form>
+
 <table class="table table-striped">
     <thead>
         <tr>
-            <td><a href="" ng-click="sortField='name'; sortReverse = !sortReverse">Name
+            <td><a href="" ng-click="sortField='name'; sortReverse = !sortReverse">{{'NAME' | translate}}
                 <span ng-show="sortField == 'name' && !sortReverse" class="fa fa-caret-down"></span>
                 <span ng-show="sortField == 'name' && sortReverse" class="fa fa-caret-up"></span>
             </a></td>
-            <td><a href="" ng-click="sortField='category.name'; sortReverse = !sortReverse">Category
+            <td><a href="" ng-click="sortField='category.name'; sortReverse = !sortReverse">{{'CATEGORY' | translate}}
                 <span ng-show="sortField == 'category.name' && !sortReverse" class="fa fa-caret-down"></span>
                 <span ng-show="sortField == 'category.name' && sortReverse" class="fa fa-caret-up"></span>
             </a></td>
-            <td><a href="" ng-click="sortField='amount'; sortReverse = !sortReverse">Amount
+            <td><a href="" ng-click="sortField='amount'; sortReverse = !sortReverse">{{'AMOUNT' | translate}}
                 <span ng-show="sortField == 'amount' && !sortReverse" class="fa fa-caret-down"></span>
                 <span ng-show="sortField == 'amount' && sortReverse" class="fa fa-caret-up"></span>
             </a></td>
-            <td><a href="" ng-click="sortField='dateField'; sortReverse = !sortReverse">Date
+            <td><a href="" ng-click="sortField='dateField'; sortReverse = !sortReverse">{{'DATE' | translate}}
                 <span ng-show="sortField == 'dateField' && !sortReverse" class="fa fa-caret-down"></span>
                 <span ng-show="sortField == 'dateField' && sortReverse" class="fa fa-caret-up"></span>
             </a></td>
@@ -30,15 +31,15 @@
     <tbody>
         <tr ng-repeat="expense in expenses | orderBy: sortField:sortReverse | filter: searchExpenses">
             <td ng-show="!edit[expense.id]">{{expense.name}}</td>
-            <td ng-show="edit[expense.id]"><input type="text" class="form-control" placeholder="Name" ng-model="editExpense.name"></td>
+            <td ng-show="edit[expense.id]"><input type="text" class="form-control" placeholder="{{'NAME' | translate}}" ng-model="editExpense.name"></td>
             <td ng-show="!edit[expense.id]">{{expense.category.name}}</td>
             <td ng-show="edit[expense.id]">
                 <select class="form-control" ng-model="editExpense.category" ng-options="category.name for category in categories track by category.id"></select>
             </td>
             <td ng-show="!edit[expense.id]">{{expense.amount}}</td>
-            <td ng-show="edit[expense.id]"><input type="number" min="0" step="0.01" class="form-control" placeholder="Amount" ng-model="editExpense.amount"></td>
+            <td ng-show="edit[expense.id]"><input type="number" min="0" step="0.01" class="form-control" placeholder="{{'AMOUNT' | translate}}" ng-model="editExpense.amount"></td>
             <td>{{expense.date}}<span ng-show="!edit[expense.id]" style="cursor:pointer; margin-left: 4%" class="float-right" data={{expense.id}} ng-click="removeExpense(expense.id)">x</span><span ng-show="!edit[expense.id]" class="fa fa-edit float-right" style="cursor:pointer;" data={{expense.id}} ng-click="editExpense.name = expense.name; editExpense.category = expense.category; editExpense.amount = expense.amount; editExpense.date = expense.date; edit[expense.id] = true"></span></div></td>
-            <td ng-show="edit[expense.id]"><button class="btn btn-success" ng-click="updateExpense(expense.id); edit[expense.id] = false" ng-disabled="editExpense.name == null || editExpense.category == null || editExpense.amount == null">Update</button></td><td ng-show="edit[expense.id]"><button class="btn btn-danger" ng-click="edit[expense.id] = false">Cancel</button></td>
+            <td ng-show="edit[expense.id]"><button class="btn btn-success" ng-click="updateExpense(expense.id); edit[expense.id] = false" ng-disabled="editExpense.name == null || editExpense.category == null || editExpense.amount == null">{{'UPDATE' | translate}}</button></td><td ng-show="edit[expense.id]"><button class="btn btn-danger" ng-click="edit[expense.id] = false">{{'CANCEL' | translate}}</button></td>
         </tr>
     </tbody>  
 </table>
@@ -46,15 +47,15 @@
     <table class="table">
         <tbody>
             <tr>
-                <td><input type="text" class="form-control" placeholder="Name" ng-model="newExpense.name"></td>
+                <td><input type="text" class="form-control" placeholder="{{'NAME' | translate}}" ng-model="newExpense.name"></td>
                 <td>
                     <select placeholder="Category" class="form-control" ng-model="newExpense.category">
-                        <option value="" selected disabled hidden>Category</option>
+                        <option value="" selected disabled hidden>{{'CATEGORY' | translate}}</option>
                         <option ng-repeat="category in categories" ng-value=category>{{category.name}}</option>
                     </select>
                 </td>
-                <td><input type="number" min="0" step="0.01" class="form-control" placeholder="Amount" ng-model="newExpense.amount"></td>
-                <td><button class="btn btn-success" ng-click="addExpense(); newExpense = {}" ng-disabled="newExpense.name == null || newExpense.category == null || newExpense.amount == null">Add</button></td>
+                <td><input type="number" min="0" step="0.01" class="form-control" placeholder="{{'AMOUNT' | translate}}" ng-model="newExpense.amount"></td>
+                <td><button class="btn btn-success" ng-click="addExpense(); newExpense = {}" ng-disabled="newExpense.name == null || newExpense.category == null || newExpense.amount == null">{{'ADD' | translate}}</button></td>
             </tr>
         </tbody>
     </table>

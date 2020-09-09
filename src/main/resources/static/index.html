@@ -13,6 +13,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-route.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
+        <script src="bower-angular-translate-2.18.3/angular-translate.js"></script>
     </head>
 <body>
     <div ng-app="DiaxeirisiExodon">
@@ -22,13 +23,13 @@
                 <nav class="bg-dark navbar-dark col-2">
                     <ul class="navbar-nav" style="margin-top: 69px;">
                         <li class="nav-item">
-                        <a class="nav-link" href="#!categories">Categories</a>
+                        <a class="nav-link" href="#!categories">{{'CATEGORIES' | translate}}</a>
                         </li>
                         <li class="nav-item">
-                        <a class="nav-link" href="#!">Current expenses</a>
+                        <a class="nav-link" href="#!">{{'CURRENT_EXPENSES' | translate}}</a>
                         </li>
                         <li class="nav-item">
-                        <a class="nav-link" href="#!expensesHistory">Expenses history</a>
+                        <a class="nav-link" href="#!expensesHistory">{{'EXPENSES_HISTORY' | translate}}</a>
                         </li>
                     </ul>
                 </nav>
@@ -37,7 +38,7 @@
         </div>
 
         <script>
-            app = angular.module('DiaxeirisiExodon', ['ngRoute']);
+            app = angular.module('DiaxeirisiExodon', ['ngRoute', 'pascalprecht.translate']);
             app.config(function($routeProvider) {
                 $routeProvider.when("/categories", {
                     templateUrl: "/views/categories.html",
@@ -49,6 +50,44 @@
                     templateUrl: "/views/expensesHistory.html",
                     controller: "expensesHistoryController"
                 });
+            });
+
+            app.config(function($translateProvider) {
+                $translateProvider.translations('en', {
+                    CATEGORIES: 'Categories',
+                    CURRENT_EXPENSES: 'Current expenses',
+                    EXPENSES_HISTORY: 'Expenses history',
+                    SEARCH: 'Search',
+                    ADD: 'Add',
+                    UPDATE: 'Update',
+                    CANCEL: 'Cancel',
+                    ADD_NEW_CATEGORY: 'Add a new category',
+                    NAME: 'Name',
+                    CATEGORY: 'Category',
+                    AMOUNT: 'Amount',
+                    DATE: 'Date',
+                    DATE_FROM: 'From:',
+                    DATE_TO: 'To:'
+                });
+
+                $translateProvider.translations('gr', {
+                    CATEGORIES: 'Κατηγορίες',
+                    CURRENT_EXPENSES: 'Τρέχοντα έξοδα',
+                    EXPENSES_HISTORY: 'Ιστορικό εξόδων',
+                    SEARCH: 'Αναζήτηση',
+                    ADD: 'Προσθήκη',
+                    UPDATE: 'Ενημέρωση',
+                    CANCEL: 'Ακύρωση',
+                    ADD_NEW_CATEGORY: 'Προσθήκη νέας κατηγορίας',
+                    NAME: 'Όνομα',
+                    CATEGORY: 'Κατηγορία',
+                    AMOUNT: 'Ποσό',
+                    DATE: 'Ημερομηνία',
+                    DATE_FROM: 'Από:',
+                    DATE_TO: 'Έως:'
+                });
+
+                $translateProvider.preferredLanguage('gr');
             });
 
             app.controller('myController', function($scope, $http) {

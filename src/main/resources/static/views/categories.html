@@ -3,7 +3,7 @@
         <div class="form-group">
             <div class="input-group mb-3">
                 <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-search"></i></span></div>
-                <input type="text" class="form-control" placeholder="search in categories" ng-model="searchCategories">
+                <input type="text" class="form-control" placeholder="{{'SEARCH' | translate}}" ng-model="searchCategories">
             </div>
         </div>
     </form>
@@ -11,7 +11,7 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <td><a href="" ng-click="sortField='name'; sortReverse = !sortReverse">Κατηγορία
+                <td><a href="" ng-click="sortField='name'; sortReverse = !sortReverse">{{'CATEGORIES' | translate}}
                     <span ng-show="sortField == 'name' && !sortReverse" class="fa fa-caret-down"></span>
                     <span ng-show="sortField == 'name' && sortReverse" class="fa fa-caret-up"></span>
                 </a></td>
@@ -21,12 +21,12 @@
             <tr ng-repeat="category in categories | orderBy: sortField:sortReverse | filter: searchCategories">
                 <td ng-show="!edit[category.id]">{{category.name}}<span style="cursor:pointer; margin-left: 4%" class="float-right" data={{category.id}} ng-click="removeCategory(category.id)">x</span><span class="fa fa-edit float-right" style="cursor:pointer;" data={{category.id}} ng-click="editCategory.name = category.name; edit[category.id] = true"></span></td>
                 <td ng-show="edit[category.id]"><input type="text" class="form-control" placeholder="Name" ng-model="editCategory.name" required></td>
-                <td ng-show="edit[category.id]"><button class="btn btn-success" ng-click="updateCategory(category.id); edit[category.id] = false" ng-disabled="editCategory.name == null">Update</button></td><td ng-show="edit[category.id]"><button class="btn btn-danger" ng-click="edit[category.id] = false">Cancel</button></td>
+                <td ng-show="edit[category.id]"><button class="btn btn-success" ng-click="updateCategory(category.id); edit[category.id] = false" ng-disabled="editCategory.name == null">{{'UPDATE' | translate}}</button></td><td ng-show="edit[category.id]"><button class="btn btn-danger" ng-click="edit[category.id] = false">{{'CANCEL' | translate}}</button></td>
             </tr>
         </tbody>
     </table>
     <div class="input-group mb-3">
-        <input type="text" class="form-control" placeholder="Add a new category" ng-model="newCategory.name">
-        <div class="input-group-append"><button class="btn btn-success" ng-click="addCategory(); newCategory = {}" ng-disabled="newCategory.name == null">Add</button></div>
+        <input type="text" class="form-control" placeholder="{{'ADD_NEW_CATEGORY' | translate}}" ng-model="newCategory.name">
+        <div class="input-group-append"><button class="btn btn-success" ng-click="addCategory(); newCategory = {}" ng-disabled="newCategory.name == null">{{'ADD' | translate}}</button></div>
     </div>
 </div>
